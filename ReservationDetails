@@ -12,13 +12,20 @@
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style>
+        .action-button { background-color: #d30bb2; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
+        .action-button:hover { background-color: #b30992; }
+        .action-button:disabled { background-color: #7a5273; cursor: not-allowed; }
+        .secondary-action-button { background-color: #492242; }
+        .secondary-action-button:hover { background-color: #6d3a61; }
+    </style>
   </head>
   <body>
     <div
       class="relative flex size-full min-h-screen flex-col bg-[#231020] dark justify-between group/design-root overflow-x-hidden"
       style='font-family: Manrope, "Noto Sans", sans-serif;'
     >
-      <div class="pb-20"> 
+      <div class="pb-24"> {/* Increased padding for taller fixed bar */}
         <div class="flex items-center bg-[#231020] p-4 pb-2 justify-between sticky top-0 z-10">
           <a href="Reservation" class="text-white flex size-12 shrink-0 items-center" data-icon="ArrowLeft" data-size="24px" data-weight="regular">
             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
@@ -29,6 +36,7 @@
         </div>
         
         <div id="reservation-details-content">
+            {/* Reservation details will be loaded here */}
             <h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Reservation</h3>
             <div class="bg-[#231020] px-4 py-2">
                 <p id="details-customer-name" class="text-white text-xl font-semibold leading-normal line-clamp-1">Caricamento...</p>
@@ -48,38 +56,28 @@
              <div class="bg-[#231020] px-4 py-2">
                 <p id="details-reservation-status" class="text-white text-base font-medium leading-normal">Status: Caricamento...</p>
             </div>
-            <div id="reservation-fetch-error" class="px-4 py-2 text-red-500 text-sm"></div>
+            <div id="reservation-fetch-error" class="px-4 py-2 text-red-500 text-sm min-h-[20px]"></div>
         </div>
 
         <h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Orders</h3>
         <div id="orders-list-container" class="bg-[#231020] px-4 py-2">
           <p class="text-white text-sm">Caricamento ordini...</p>
         </div>
-        <div id="orders-fetch-error" class="px-4 py-2 text-red-500 text-sm"></div>
-        <div id="print-message-area" class="px-4 py-2 text-sm"></div>
+        <div id="orders-fetch-error" class="px-4 py-2 text-red-500 text-sm min-h-[20px]"></div>
+        <div id="action-feedback" class="px-4 py-2 text-sm min-h-[20px]"></div> {/* For create order feedback */}
+        <div id="print-message-area" class="px-4 py-2 text-sm min-h-[20px]"></div>
+
 
       </div>
-      <div class="fixed bottom-0 left-0 right-0 z-10 flex justify-center bg-[#231020]">
-          <div class="flex flex-1 gap-3 flex-wrap px-4 py-3 max-w-[480px] justify-center">
-            <button
-              id="edit-orders-btn"
-              style="display: none;" 
-              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#492242] text-white text-sm font-bold leading-normal tracking-[0.015em] grow"
-            >
-              <span class="truncate">Edit Orders</span>
-            </button>
-            <button
-              id="add-orders-btn"
-              style="display: none;" 
-              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#d30bb2] text-white text-sm font-bold leading-normal tracking-[0.015em] grow"
-            >
-              <span class="truncate">Add Orders</span>
-            </button>
+      <div class="fixed bottom-0 left-0 right-0 z-10 bg-[#231020] border-t border-[#492242] pt-3 pb-3 px-4">
+          <div class="flex flex-col gap-3 max-w-[480px] mx-auto">
+            <button id="manage-food-order-btn" class="action-button secondary-action-button w-full text-sm font-bold">Manage Food Order</button>
+            <button id="manage-beverage-order-btn" class="action-button secondary-action-button w-full text-sm font-bold">Manage Beverage Order</button>
           </div>
       </div>
     </div>
     <script>
-      document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', async () => {
         const customerNameEl = document.getElementById('details-customer-name');
         const numGuestsEl = document.getElementById('details-num-guests');
         const tableNumberEl = document.getElementById('details-table-number');
@@ -90,165 +88,186 @@
         const reservationFetchErrorEl = document.getElementById('reservation-fetch-error');
         const ordersFetchErrorEl = document.getElementById('orders-fetch-error');
         const printMessageArea = document.getElementById('print-message-area');
-        
-        const editOrdersBtn = document.getElementById('edit-orders-btn');
-        const addOrdersBtn = document.getElementById('add-orders-btn');
-        if(editOrdersBtn) editOrdersBtn.style.display = 'none';
-        if(addOrdersBtn) addOrdersBtn.style.display = 'none';
+        const actionFeedbackEl = document.getElementById('action-feedback');
 
+        const manageFoodOrderBtn = document.getElementById('manage-food-order-btn');
+        const manageBeverageOrderBtn = document.getElementById('manage-beverage-order-btn');
+        
         const params = new URLSearchParams(window.location.search);
         const reservationId = params.get('id');
+        let fetchedReservationData = null; // To store all reservation data including orders
 
-        function showMessage(element, message, isError = true) {
+        function showMessage(element, message, isError = true, duration = 3000) {
             element.textContent = message;
-            element.className = isError ? 'text-red-500 p-2 text-sm' : 'text-green-500 p-2 text-sm';
-            if (!message) element.className = ''; // Clear class if no message
+            element.className = isError ? 'text-red-500 py-1 text-sm min-h-[20px]' : 'text-green-500 py-1 text-sm min-h-[20px]';
+            if (message && duration > 0) {
+                setTimeout(() => { element.textContent = ''; }, duration);
+            }
         }
 
         if (!reservationId) {
-          document.getElementById('reservation-details-content').innerHTML = '<p class="text-red-500 text-center p-8">ID Prenotazione non trovato nella URL.</p>';
-          ordersListContainer.innerHTML = ''; // Clear loading orders
-          return;
+            document.getElementById('reservation-details-content').innerHTML = '<p class="text-red-500 text-center p-8">ID Prenotazione non trovato nella URL.</p>';
+            ordersListContainer.innerHTML = ''; 
+            manageFoodOrderBtn.disabled = true;
+            manageBeverageOrderBtn.disabled = true;
+            return;
         }
 
-        async function fetchReservationDetails() {
-          reservationFetchErrorEl.textContent = ''; // Clear previous errors
-          // Initial loading messages are in HTML, so no need to set them here unless resetting
-          try {
-            const response = await fetch(\`/api/reservations/\${reservationId}\`);
-            if (!response.ok) {
-              let errorMsg = \`Errore HTTP: \${response.status}\`;
-              if (response.status === 404) errorMsg = 'Prenotazione non trovata.';
-              throw new Error(errorMsg);
-            }
-            const reservation = await response.json();
-
-            customerNameEl.textContent = reservation.customer_name;
-            numGuestsEl.textContent = \`Ospiti: \${reservation.num_guests}\`;
-            tableNumberEl.textContent = \`Tavolo: \${reservation.table_number || 'N/A'}\`;
-            statusEl.textContent = \`Status: \${reservation.status}\`;
-
-            const reservationDateTime = new Date(reservation.reservation_time);
-            dateEl.textContent = \`Data: \${reservationDateTime.toLocaleDateString('it-IT', { year: 'numeric', month: 'short', day: 'numeric' })}\`;
-            timeEl.textContent = \`Ora: \${reservationDateTime.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}\`;
+        async function mainFetchAndRender() {
+            showMessage(reservationFetchErrorEl, '', false);
+            showMessage(ordersFetchErrorEl, '', false);
+            showMessage(actionFeedbackEl, '', false);
+            ordersListContainer.innerHTML = '<p class="text-white text-sm">Caricamento ordini...</p>';
             
-            return reservation; 
-          } catch (error) {
-            console.error('Errore nel caricare i dettagli della prenotazione:', error);
-            customerNameEl.textContent = ''; // Clear loading text
-            showMessage(reservationFetchErrorEl, error.message);
-            // Clear other fields too
-            numGuestsEl.textContent = ''; tableNumberEl.textContent = ''; dateEl.textContent = ''; timeEl.textContent = ''; statusEl.textContent = '';
-            ordersListContainer.innerHTML = ''; // Don't try to load orders if reservation fails
-            return null;
-          }
+            try {
+                const response = await fetch(\`/api/reservations/\${reservationId}\`);
+                if (!response.ok) {
+                    let errorMsg = \`Errore HTTP: \${response.status}\`;
+                    if (response.status === 404) errorMsg = 'Prenotazione non trovata.';
+                    throw new Error(errorMsg);
+                }
+                fetchedReservationData = await response.json();
+
+                customerNameEl.textContent = fetchedReservationData.customer_name;
+                numGuestsEl.textContent = \`Ospiti: \${fetchedReservationData.num_guests}\`;
+                tableNumberEl.textContent = \`Tavolo: \${fetchedReservationData.table_number || 'N/A'}\`;
+                statusEl.textContent = \`Status: \${fetchedReservationData.status}\`;
+
+                const reservationDateTime = new Date(fetchedReservationData.reservation_time);
+                dateEl.textContent = \`Data: \${reservationDateTime.toLocaleDateString('it-IT', { year: 'numeric', month: 'short', day: 'numeric' })}\`;
+                timeEl.textContent = \`Ora: \${reservationDateTime.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}\`;
+                
+                // Process orders included in reservation data
+                if (fetchedReservationData.orders) {
+                    displayOrders(fetchedReservationData.orders);
+                } else {
+                     // Fallback if backend doesn't nest orders - this path should ideally not be hit if backend is consistent
+                    console.warn("Reservation data did not contain orders. Attempting fallback: GET /api/orders and filter.");
+                    const allOrdersResponse = await fetch('/api/orders');
+                    if (!allOrdersResponse.ok) throw new Error(\`Cannot fetch all orders: \${allOrdersResponse.status}\`);
+                    const allOrders = await allOrdersResponse.json();
+                    fetchedReservationData.orders = allOrders.filter(order => order.reservation_id === parseInt(reservationId));
+                    displayOrders(fetchedReservationData.orders);
+                }
+            } catch (error) {
+                console.error('Errore nel caricare i dettagli della prenotazione:', error);
+                customerNameEl.textContent = ''; 
+                showMessage(reservationFetchErrorEl, error.message, true, 0);
+                numGuestsEl.textContent = ''; tableNumberEl.textContent = ''; dateEl.textContent = ''; timeEl.textContent = ''; statusEl.textContent = '';
+                ordersListContainer.innerHTML = ''; 
+                manageFoodOrderBtn.disabled = true; manageBeverageOrderBtn.disabled = true;
+            }
         }
 
         function displayOrders(orders) {
-          ordersListContainer.innerHTML = ''; 
-          ordersFetchErrorEl.textContent = '';
-          if (!orders || orders.length === 0) {
-            ordersListContainer.innerHTML = '<p class="text-white text-sm">Nessun ordine per questa prenotazione.</p>';
-            return;
-          }
+            ordersListContainer.innerHTML = ''; 
+            showMessage(ordersFetchErrorEl,'',false);
+            if (!orders || orders.length === 0) {
+                ordersListContainer.innerHTML = '<p class="text-white text-sm">Nessun ordine per questa prenotazione.</p>';
+                return;
+            }
 
-          orders.forEach(order => {
-            const orderDiv = document.createElement('div');
-            orderDiv.className = 'mb-4 p-3 rounded-lg bg-[#492242]'; 
-
-            const orderTypeTitle = order.order_type === 'food' ? 'Ordine Cibo' : 
-                                  order.order_type === 'beverage' ? 'Ordine Bevande' : 'Ordine';
-            const itemCount = order.items ? order.items.length : 0;
-
-            orderDiv.innerHTML = \`
-              <p class="text-white font-semibold">\${orderTypeTitle} (ID: \${order.id})</p>
-              <p class="text-sm text-[#cb90c1]">Articoli: \${itemCount}</p>
-              <p class="text-sm text-[#cb90c1]">Status: \${order.status}</p>
-              <button 
-                data-order-id="\${order.id}" 
-                class="print-order-btn mt-2 px-3 py-1 bg-[#d30bb2] text-white text-xs font-bold rounded hover:bg-[#b30992] transition-colors"
-              >
-                Stampa
-              </button>
-              <span class="print-status text-xs ml-2"></span>
-            \`;
-            ordersListContainer.appendChild(orderDiv);
-          });
-
-          document.querySelectorAll('.print-order-btn').forEach(button => {
-            button.addEventListener('click', handlePrintOrder);
-          });
+            orders.forEach(order => {
+                const orderDiv = document.createElement('div');
+                orderDiv.className = 'mb-4 p-3 rounded-lg bg-[#492242]'; 
+                const orderTypeTitle = order.order_type === 'food' ? 'Ordine Cibo' : 
+                                      order.order_type === 'beverage' ? 'Ordine Bevande' : 'Ordine';
+                const itemCount = order.items ? order.items.length : 0;
+                orderDiv.innerHTML = \`
+                  <p class="text-white font-semibold">\${orderTypeTitle} (ID: \${order.id})</p>
+                  <p class="text-sm text-[#cb90c1]">Articoli: \${itemCount}</p>
+                  <p class="text-sm text-[#cb90c1]">Status: \${order.status}</p>
+                  <button data-order-id="\${order.id}" class="print-order-btn mt-2 px-3 py-1 bg-[#d30bb2] text-white text-xs font-bold rounded hover:bg-[#b30992] transition-colors">Stampa</button>
+                  <span class="print-status text-xs ml-2"></span>
+                \`;
+                ordersListContainer.appendChild(orderDiv);
+            });
+            document.querySelectorAll('.print-order-btn').forEach(button => button.addEventListener('click', handlePrintOrder));
         }
+
+        async function handleManageOrder(orderType) {
+            showMessage(actionFeedbackEl, \`Processing \${orderType} order...\`, false, 0);
+            manageFoodOrderBtn.disabled = true; manageBeverageOrderBtn.disabled = true;
+
+            let orderToManage = null;
+            if (fetchedReservationData && fetchedReservationData.orders) {
+                orderToManage = fetchedReservationData.orders.find(o => o.order_type === orderType);
+            }
+
+            if (orderToManage) {
+                window.location.href = \`ManageOrder.html?reservation_id=\${reservationId}&order_id=\${orderToManage.id}\`;
+            } else {
+                try {
+                    const response = await fetch(\`/api/reservations/\${reservationId}/orders\`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ order_type: orderType })
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || \`Failed to create \${orderType} order\`);
+                    }
+                    const newOrder = await response.json();
+                    // Instead of just adding to local array, re-fetch all details to ensure UI consistency
+                    // and to get the newly created order with its items if backend returns it fully.
+                    await mainFetchAndRender(); // This will re-render the orders list including the new one.
+                    showMessage(actionFeedbackEl, \`\${orderType.charAt(0).toUpperCase() + orderType.slice(1)} order created. Redirecting...\`, false, 2000);
+                    setTimeout(() => {
+                        window.location.href = \`ManageOrder.html?reservation_id=\${reservationId}&order_id=\${newOrder.id}\`;
+                    }, 500); // Short delay for user to see message
+                } catch (error) {
+                    showMessage(actionFeedbackEl, error.message, true);
+                }
+            }
+            // Re-enable buttons if not navigating away or if an error occurred before navigation
+            setTimeout(() => { // Delay to allow navigation to happen if successful
+                 if (!window.location.href.includes("ManageOrder.html")) { // Basic check
+                    manageFoodOrderBtn.disabled = false; manageBeverageOrderBtn.disabled = false;
+                 }
+            }, 1000);
+        }
+
+        manageFoodOrderBtn.addEventListener('click', () => handleManageOrder('food'));
+        manageBeverageOrderBtn.addEventListener('click', () => handleManageOrder('beverage'));
 
         async function handlePrintOrder(event) {
-          const orderId = event.target.dataset.orderId;
-          const printStatusEl = event.target.nextElementSibling; // The span for print status
-
-          showMessage(printMessageArea, '', false); // Clear global print messages
-          printStatusEl.textContent = 'Stampa in corso...';
-          printStatusEl.className = 'text-xs ml-2 text-yellow-400';
-
-
-          try {
-            const response = await fetch(\`/api/orders/\${orderId}/print\`);
-            if (!response.ok) {
-              throw new Error(\`Errore stampa: \${response.status}\`);
+            const orderId = event.target.dataset.orderId;
+            const printStatusEl = event.target.nextElementSibling; 
+            showMessage(printMessageArea, '', false); 
+            printStatusEl.textContent = 'Stampa in corso...';
+            printStatusEl.className = 'text-xs ml-2 text-yellow-400';
+            try {
+                const response = await fetch(\`/api/orders/\${orderId}/print\`);
+                if (!response.ok) throw new Error(\`Print error: \${response.status}\`);
+                const htmlContent = await response.text();
+                const printWindow = window.open('', '_blank');
+                if (printWindow) {
+                    printWindow.document.write(htmlContent);
+                    printWindow.document.close();
+                    printStatusEl.textContent = 'Completato.';
+                    printStatusEl.className = 'text-xs ml-2 text-green-400';
+                } else {
+                    alert('Impossibile aprire la finestra di stampa. Controlla il popup blocker.');
+                    showMessage(printMessageArea, 'Popup blocker may have prevented opening the print window.', true);
+                    printStatusEl.textContent = 'Fallito.'; printStatusEl.className = 'text-xs ml-2 text-red-400';
+                }
+            } catch (error) {
+                console.error('Print error:', error);
+                alert(\`Errore stampa: \${error.message}\`);
+                showMessage(printMessageArea, \`Print error for order \${orderId}: \${error.message}\`, true);
+                printStatusEl.textContent = 'Fallito.'; printStatusEl.className = 'text-xs ml-2 text-red-400';
             }
-            const htmlContent = await response.text();
-            
-            const printWindow = window.open('', '_blank');
-            if (printWindow) {
-              printWindow.document.write(htmlContent);
-              printWindow.document.close();
-              printStatusEl.textContent = 'Completato.';
-              printStatusEl.className = 'text-xs ml-2 text-green-400';
-            } else {
-              // Fallback to alert if window fails to open, then use inline message
-              alert('Impossibile aprire la finestra di stampa. Controlla le impostazioni del popup blocker.');
-              showMessage(printMessageArea, 'Impossibile aprire la finestra di stampa. Controlla il popup blocker.', true);
-              printStatusEl.textContent = 'Fallito.';
-              printStatusEl.className = 'text-xs ml-2 text-red-400';
-            }
-          } catch (error) {
-            console.error('Errore durante la stampa:', error);
-            // Fallback to alert for critical errors, then use inline message
-            alert(\`Errore durante la stampa dell'ordine: \${error.message}\`);
-            showMessage(printMessageArea, \`Errore stampa ordine \${orderId}: \${error.message}\`, true);
-            printStatusEl.textContent = 'Fallito.';
-            printStatusEl.className = 'text-xs ml-2 text-red-400';
-          }
         }
         
-        (async () => {
-          ordersListContainer.innerHTML = '<p class="text-white text-sm">Caricamento ordini...</p>'; // Set initial loading for orders
-          const reservationData = await fetchReservationDetails();
-          
-          if (reservationData) { // Only proceed if reservation details were fetched successfully
-            if (reservationData.orders && reservationData.orders.length > 0) {
-              displayOrders(reservationData.orders);
-            } else if (reservationData.orders && reservationData.orders.length === 0) {
-              displayOrders([]); // Show "No orders" message
-            } else {
-              // Fallback or if reservation.orders is undefined
-              console.warn("Reservation data did not contain orders or it was undefined. Attempting fallback: GET /api/orders and filter.");
-              ordersListContainer.innerHTML = '<p class="text-white text-sm">Controllo ordini alternativo...</p>';
-              try {
-                  const allOrdersResponse = await fetch('/api/orders');
-                  if (!allOrdersResponse.ok) throw new Error(\`Impossibile caricare tutti gli ordini: \${allOrdersResponse.status}\`);
-                  const allOrders = await allOrdersResponse.json();
-                  const reservationOrders = allOrders.filter(order => order.reservation_id === parseInt(reservationId));
-                  displayOrders(reservationOrders);
-              } catch (e) {
-                  console.error("Fallback per caricare tutti gli ordini fallito:", e);
-                  showMessage(ordersFetchErrorEl, e.message, true);
-                  ordersListContainer.innerHTML = ''; // Clear loading message
-              }
+        mainFetchAndRender(); // Initial fetch
+
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                console.log('Page loaded from bfcache. Re-fetching details.');
+                mainFetchAndRender();
             }
-          } else {
-             ordersListContainer.innerHTML = ''; // Clear loading message if reservation fetch failed
-          }
-        })();
-      });
+        });
+    });
     </script>
   </body>
 </html>

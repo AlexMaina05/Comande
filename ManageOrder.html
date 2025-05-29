@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Order</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style>
+        body { font-family: Manrope, "Noto Sans", sans-serif; }
+        .menu-item-card { background-color: #492242; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+        .current-order-item-card { background-color: #3a1a34; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+        .action-button { background-color: #d30bb2; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
+        .action-button:hover { background-color: #b30992; }
+        .action-button:disabled { background-color: #7a5273; cursor: not-allowed; }
+        .remove-button { background-color: #ef4444; } /* red-500 */
+        .remove-button:hover { background-color: #dc2626; } /* red-600 */
+        .quantity-controls button { background-color: #8b5cf6; /* violet-500 */ padding: 4px 8px; border-radius: 4px; }
+        .quantity-controls input { width: 40px; text-align: center; background-color: #492242; border-radius:4px; margin: 0 4px; }
+        .special-requests-input { background-color: #492242; color:white; padding: 6px; border-radius: 4px; width: calc(100% - 70px); margin-right:5px }
+        .save-request-btn { background-color: #10b981; /* emerald-500 */ padding: 4px 8px; text-xs; border-radius:4px;}
+    </style>
+</head>
+<body class="bg-[#231020] text-white">
+
+    <header class="p-4 bg-[#34182f] sticky top-0 z-10">
+        <div class="flex justify-between items-center">
+            <h2 id="manage-order-title" class="text-xl font-bold">Manage Order</h2>
+            <a id="back-to-reservation-btn" href="#" class="action-button">Back to Reservation</a>
+        </div>
+        <div id="error-message" class="text-red-400 mt-2 text-sm min-h-[20px]"></div>
+        <div id="action-feedback" class="text-green-400 mt-2 text-sm min-h-[20px]"></div>
+    </header>
+
+    <div class="flex flex-col md:flex-row gap-4 p-4">
+        <div class="md:w-1/2">
+            <h3 class="text-lg font-semibold mb-2">Menu Items</h3>
+            <div id="menu-items-container" class="space-y-2 max-h-[70vh] overflow-y-auto p-2 bg-[#2a1426] rounded-md">
+                <p>Loading menu items...</p>
+            </div>
+        </div>
+
+        <div class="md:w-1/2">
+            <h3 class="text-lg font-semibold mb-2">Current Order</h3>
+            <div id="current-order-items-container" class="space-y-2 max-h-[70vh] overflow-y-auto p-2 bg-[#2a1426] rounded-md">
+                <p>Loading order items...</p>
+            </div>
+            <div class="mt-4 p-2 bg-[#34182f] rounded-md">
+                <h4 class="text-lg font-semibold">Order Total: <span id="order-total">$0.00</span></h4>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const manageOrderTitle = document.getElementById('manage-order-title');
+        const errorMessageDiv = document.getElementById('error-message');
+        const actionFeedbackDiv = document.getElementById('action-feedback');
+        const menuItemsContainer = document.getElementById('menu-items-container');
+        const currentOrderItemsContainer = document.getElementById('current-order-items-container');
+        const backToReservationBtn = document.getElementById('back-to-reservation-btn');
+        const orderTotalEl = document.getElementById('order-total');
+
+        let currentOrder = null;
+        let currentReservationId = null;
+        let currentOrderId = null;
+
+        function showMessage(element, message, isError = true, duration = 3000) {
+            element.textContent = message;
+            element.className = isError ? 'text-red-400 py-1 text-sm min-h-[20px]' : 'text-green-400 py-1 text-sm min-h-[20px]';
+            if (message && duration > 0) {
+                setTimeout(() => { element.textContent = ''; }, duration);
+            }
+        }
+        
+        const params = new URLSearchParams(window.location.search);
+        currentReservationId = params.get('reservation_id');
+        currentOrderId = params.get('order_id');
+
+        if (!currentReservationId || !currentOrderId) {
+            showMessage(errorMessageDiv, 'Reservation ID or Order ID missing from URL.', true, 0);
+            manageOrderTitle.textContent = 'Error';
+            menuItemsContainer.innerHTML = ''; currentOrderItemsContainer.innerHTML = '';
+            return;
+        }
+        backToReservationBtn.href = \`ReservationDetails.html?id=\${currentReservationId}\`;
+
+        function findOrderItemByMenuItemId(menuItemId) {
+            if (!currentOrder || !currentOrder.items) return null;
+            return currentOrder.items.find(item => item.menu_item_id === menuItemId);
+        }
+
+        async function fetchOrderDetails(showActionFeedback = false) {
+            try {
+                const response = await fetch(\`/api/orders/\${currentOrderId}\`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || \`HTTP Error: \${response.status}\`);
+                }
+                currentOrder = await response.json();
+                manageOrderTitle.textContent = \`Manage \${currentOrder.order_type === 'food' ? 'Food' : 'Beverage'} Order (ID: \${currentOrder.id})\`;
+                renderCurrentOrderItems(currentOrder.items);
+                calculateAndDisplayTotal(currentOrder.items);
+                if (showActionFeedback) showMessage(actionFeedbackDiv, 'Order updated.', false);
+                // Only fetch menu items if they haven't been fetched or if order type changes (rare for this page)
+                if (menuItemsContainer.querySelector('p')) { // Checks for "Loading..." or error message
+                    await fetchAndRenderMenuItems(currentOrder.order_type);
+                }
+            } catch (error) {
+                console.error('Failed to fetch order details:', error);
+                showMessage(errorMessageDiv, \`Failed to load order: \${error.message}\`, true, 0);
+                currentOrderItemsContainer.innerHTML = '<p class="text-red-400">Could not load order items.</p>'; 
+            }
+        }
+
+        async function fetchAndRenderMenuItems(orderType) {
+            menuItemsContainer.innerHTML = '<p class="text-gray-400">Loading menu items...</p>';
+            try {
+                const response = await fetch('/api/menu_items');
+                if (!response.ok) throw new Error(\`HTTP Error: \${response.status}\`);
+                const allMenuItems = await response.json();
+                const beverageCategories = ['beverage', 'drinks', 'wine', 'cocktails', 'beer', 'soft drink'];
+                let filteredMenuItems;
+                if (orderType === 'food') {
+                    filteredMenuItems = allMenuItems.filter(item => !beverageCategories.includes(item.category.toLowerCase()));
+                } else if (orderType === 'beverage') {
+                    filteredMenuItems = allMenuItems.filter(item => beverageCategories.includes(item.category.toLowerCase()));
+                } else { filteredMenuItems = allMenuItems; }
+                renderMenuItems(filteredMenuItems);
+            } catch (error) {
+                console.error('Failed to fetch menu items:', error);
+                showMessage(errorMessageDiv, \`Failed to load menu: \${error.message}\`, true, 0);
+                menuItemsContainer.innerHTML = '<p class="text-red-400">Could not load menu items.</p>';
+            }
+        }
+
+        function renderMenuItems(menuItems) {
+            menuItemsContainer.innerHTML = '';
+            if (!menuItems || menuItems.length === 0) {
+                menuItemsContainer.innerHTML = '<p class="text-gray-400">No menu items available for this order type.</p>';
+                return;
+            }
+            menuItems.forEach(menuItem => {
+                const card = document.createElement('div');
+                card.className = 'menu-item-card flex justify-between items-center';
+                card.innerHTML = \`
+                    <div>
+                        <p class="font-semibold">\${menuItem.name}</p>
+                        <p class="text-sm text-[#cb90c1]">$ \${menuItem.price.toFixed(2)}</p>
+                    </div>
+                    <button data-menu-item-id="\${menuItem.id}" class="add-to-order-btn action-button text-sm">Add</button>
+                \`;
+                menuItemsContainer.appendChild(card);
+            });
+            document.querySelectorAll('.add-to-order-btn').forEach(button => button.addEventListener('click', handleAddToOrder));
+        }
+        
+        function renderCurrentOrderItems(orderItems) {
+            currentOrderItemsContainer.innerHTML = '';
+            if (!orderItems || orderItems.length === 0) {
+                currentOrderItemsContainer.innerHTML = '<p class="text-gray-400">No items in this order yet.</p>';
+                return;
+            }
+            orderItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'current-order-item-card p-3';
+                card.innerHTML = \`
+                    <p class="font-semibold text-md">\${item.menu_item_name || 'Unknown Item'}</p>
+                    <p class="text-xs text-[#cb90c1] mb-1">Unit Price: $ \${(item.menu_item_price || 0).toFixed(2)}</p>
+                    <div class="flex items-center gap-2 mb-2">
+                        <label class="text-xs">Qty:</label>
+                        <button data-order-item-id="\${item.id}" data-change="-1" class="quantity-change-btn action-button text-xs">-</button>
+                        <input type="number" min="1" value="\${item.quantity}" class="quantity-input w-12 text-center bg-[#492242] rounded" data-order-item-id="\${item.id}" data-current-quantity="\${item.quantity}">
+                        <button data-order-item-id="\${item.id}" data-change="1" class="quantity-change-btn action-button text-xs">+</button>
+                    </div>
+                    <div class="flex items-center gap-2 mb-2">
+                         <input type="text" data-order-item-id="\${item.id}" placeholder="Special requests..." class="special-requests-input text-xs flex-grow" value="\${item.special_requests || ''}">
+                         <button data-order-item-id="\${item.id}" class="save-request-btn action-button text-xs">Save</button>
+                    </div>
+                    <button data-order-item-id="\${item.id}" class="remove-order-item-btn action-button remove-button text-xs w-full">Remove</button>
+                \`;
+                currentOrderItemsContainer.appendChild(card);
+            });
+
+            document.querySelectorAll('.quantity-change-btn').forEach(button => button.addEventListener('click', handleQuantityChangeBtn));
+            document.querySelectorAll('.quantity-input').forEach(input => input.addEventListener('change', handleQuantityInputChange));
+            document.querySelectorAll('.save-request-btn').forEach(button => button.addEventListener('click', handleSaveSpecialRequest));
+            document.querySelectorAll('.remove-order-item-btn').forEach(button => button.addEventListener('click', handleRemoveOrderItem));
+        }
+
+        async function handleAddToOrder(event) {
+            const menuItemId = parseInt(event.target.dataset.menuItemId);
+            showMessage(actionFeedbackDiv, '', false); // Clear previous
+            const existingOrderItem = findOrderItemByMenuItemId(menuItemId);
+
+            if (existingOrderItem) {
+                try {
+                    const newQuantity = existingOrderItem.quantity + 1;
+                    const response = await fetch(\`/api/order_items/\${existingOrderItem.id}\`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ quantity: newQuantity })
+                    });
+                    if (!response.ok) {
+                         const errorData = await response.json();
+                         throw new Error(errorData.error || 'Failed to update quantity');
+                    }
+                    await fetchOrderDetails(true); // Refresh order and show success
+                } catch (error) { showMessage(actionFeedbackDiv, error.message, true); }
+            } else {
+                try {
+                    const response = await fetch(\`/api/orders/\${currentOrderId}/items\`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ menu_item_id: menuItemId, quantity: 1 })
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to add item.');
+                    }
+                    await fetchOrderDetails(true); 
+                } catch (error) { showMessage(actionFeedbackDiv, error.message, true); }
+            }
+        }
+
+        async function updateOrderItem(orderItemId, payload, successMessage) {
+            try {
+                const response = await fetch(\`/api/order_items/\${orderItemId}\`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Update failed');
+                }
+                await fetchOrderDetails(false); // Re-fetch to ensure data consistency
+                showMessage(actionFeedbackDiv, successMessage, false);
+            } catch (error) {
+                showMessage(actionFeedbackDiv, error.message, true);
+                // Optionally re-fetch to revert optimistic UI updates if any were made
+                await fetchOrderDetails(false); 
+            }
+        }
+
+        async function handleQuantityChangeBtn(event) {
+            const orderItemId = event.target.dataset.orderItemId;
+            const change = parseInt(event.target.dataset.change);
+            const inputField = event.target.parentElement.querySelector('.quantity-input');
+            let newQuantity = parseInt(inputField.value) + change;
+            if (newQuantity < 1) newQuantity = 1;
+            inputField.value = newQuantity; // Optimistic update for responsiveness
+            await updateOrderItem(orderItemId, { quantity: newQuantity }, 'Quantity updated.');
+        }
+        
+        async function handleQuantityInputChange(event) {
+            const orderItemId = event.target.dataset.orderItemId;
+            let newQuantity = parseInt(event.target.value);
+            if (isNaN(newQuantity) || newQuantity < 1) {
+                newQuantity = parseInt(event.target.dataset.currentQuantity) || 1; // Revert or set to 1
+                event.target.value = newQuantity;
+                 showMessage(actionFeedbackDiv, 'Quantity must be at least 1.', true);
+                return;
+            }
+            event.target.dataset.currentQuantity = newQuantity; // Update current quantity store
+            await updateOrderItem(orderItemId, { quantity: newQuantity }, 'Quantity updated.');
+        }
+
+        async function handleSaveSpecialRequest(event) {
+            const orderItemId = event.target.dataset.orderItemId;
+            const inputField = event.target.parentElement.querySelector('.special-requests-input');
+            const specialRequests = inputField.value.trim();
+            await updateOrderItem(orderItemId, { special_requests: specialRequests }, 'Special requests saved.');
+        }
+
+        async function handleRemoveOrderItem(event) {
+            const orderItemId = event.target.dataset.orderItemId;
+            if (confirm('Are you sure you want to remove this item from the order?')) {
+                try {
+                    const response = await fetch(\`/api/order_items/\${orderItemId}\`, { method: 'DELETE' });
+                    if (!response.ok) {
+                         const errorData = await response.json();
+                         throw new Error(errorData.error || 'Failed to remove item.');
+                    }
+                    await fetchOrderDetails(false);
+                    showMessage(actionFeedbackDiv, 'Item removed successfully.', false);
+                } catch (error) { showMessage(actionFeedbackDiv, error.message, true); }
+            }
+        }
+        
+        function calculateAndDisplayTotal(orderItems) {
+            if (!orderItems) {
+                orderTotalEl.textContent = '$0.00';
+                return;
+            }
+            const total = orderItems.reduce((sum, item) => {
+                // Use menu_item_price as it's the price at the time of adding to order/last update
+                return sum + (item.menu_item_price * item.quantity);
+            }, 0);
+            orderTotalEl.textContent = \`$\${total.toFixed(2)}\`;
+        }
+
+        fetchOrderDetails();
+    });
+    </script>
+</body>
+</html>
