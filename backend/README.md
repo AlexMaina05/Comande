@@ -57,7 +57,7 @@ The application uses an SQLite database (`restaurant.db`). The database file wil
 -   `requirements.txt`: Lists Python dependencies.
 -   `restaurant.db`: SQLite database file (created automatically).
 -   `models/`: Contains SQLAlchemy database model definitions.
-    -   `__init__.py`: Defines `User`, `MenuItem`, `Reservation`, `Order`, `OrderItem` models.
+-   `__init__.py`: Defines `User`, `MenuItem`, `Reservation`, `Order`, `OrderItem` models.
 -   `routes/`: Intended for API route definitions (e.g., using Flask Blueprints).
 -   `services/`: Intended for business logic.
 -   `utils/`: Intended for utility functions.
