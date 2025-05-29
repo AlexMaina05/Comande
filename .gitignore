@@ -1,0 +1,44 @@
+# Bytecode Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ambienti virtuali
+env/
+venv/
+.venv/
+ENV/
+.ENV/
+
+# File di log
+*.log
+
+# File temporanei / swap
+*.tmp
+*.temp
+*.swp
+
+# Database SQLite (auto-generato)
+backend/restaurant.db
+
+# Config editor
+.vscode/
+.idea/
+
+# Build/dist
+dist/
+build/
+*.egg-info/
+
+# File ambiente/env locali
+.env
+.env.*
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Test cache
+.pytest_cache/
