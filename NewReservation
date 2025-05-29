@@ -18,8 +18,11 @@
       class="relative flex size-full min-h-screen flex-col bg-[#231020] dark justify-between group/design-root overflow-x-hidden"
       style="--select-button-svg: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(203,144,193)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e'); font-family: Manrope, &quot;Noto Sans&quot;, sans-serif;"
     >
-      <div class="pb-20"> {/* Added padding for nav bar */}
+      {/* Main content area with padding at the bottom to avoid overlap with the (placeholder) fixed navigation bar */}
+      <div class="pb-20"> 
+        {/* Header section with back navigation and page title */}
         <div class="flex items-center bg-[#231020] p-4 pb-2 justify-between sticky top-0 z-10">
+          {/* Link to navigate back to the main Reservations page */}
           <a href="Reservation" class="text-white flex size-12 shrink-0 items-center" data-icon="X" data-size="24px" data-weight="regular">
             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
               <path
@@ -29,9 +32,12 @@
           </a>
           <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Nuova prenotazione</h2>
         </div>
+        {/* Form for creating a new reservation */}
         <form id="newReservationForm">
-          <div id="form-message-area" class="px-4 py-2 text-center text-sm"></div> 
+          {/* Area to display general form messages (success or errors) */}
+          <div id="form-message-area" class="px-4 py-2 text-center text-sm min-h-[24px]"></div> {/* min-h to prevent layout shifts */}
           
+          {/* Customer Name Input Field */}
           <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
             <label class="flex flex-col min-w-40 flex-1">
               <input
@@ -39,9 +45,11 @@
                 placeholder="Nome cliente"
                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border-none bg-[#492242] focus:border-none h-14 placeholder:text-[#cb90c1] p-4 text-base font-normal leading-normal"
               />
-              <span id="customer_name_error" class="text-red-400 text-xs pt-1"></span>
+              {/* Span to display validation errors specific to customer_name */}
+              <span id="customer_name_error" class="text-red-400 text-xs pt-1 min-h-[16px]"></span>
             </label>
           </div>
+          {/* Phone Number Input Field */}
           <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
             <label class="flex flex-col min-w-40 flex-1">
               <input
@@ -49,8 +57,11 @@
                 placeholder="Numero di telefono (opzionale)"
                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border-none bg-[#492242] focus:border-none h-14 placeholder:text-[#cb90c1] p-4 text-base font-normal leading-normal"
               />
+              {/* Span for phone_number errors (if any added later) */}
+              <span id="phone_number_error" class="text-red-400 text-xs pt-1 min-h-[16px]"></span>
             </label>
           </div>
+          {/* Reservation Time Input Field */}
           <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
             <label class="flex flex-col min-w-40 flex-1">
               <input
@@ -59,9 +70,10 @@
                 placeholder="Orario (YYYY-MM-DD HH:MM:SS)"
                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border-none bg-[#492242] focus:border-none h-14 placeholder:text-[#cb90c1] p-4 text-base font-normal leading-normal"
               />
-              <span id="reservation_time_error" class="text-red-400 text-xs pt-1"></span>
+              <span id="reservation_time_error" class="text-red-400 text-xs pt-1 min-h-[16px]"></span>
             </label>
           </div>
+          {/* Number of Guests Input Field */}
           <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
             <label class="flex flex-col min-w-40 flex-1">
               <input
@@ -70,9 +82,10 @@
                 placeholder="Numero persone"
                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border-none bg-[#492242] focus:border-none h-14 placeholder:text-[#cb90c1] p-4 text-base font-normal leading-normal"
               />
-              <span id="num_guests_error" class="text-red-400 text-xs pt-1"></span>
+              <span id="num_guests_error" class="text-red-400 text-xs pt-1 min-h-[16px]"></span>
             </label>
           </div>
+          {/* Table Number Input Field */}
           <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
             <label class="flex flex-col min-w-40 flex-1">
               <input
@@ -81,9 +94,10 @@
                 placeholder="Tavolo (opzionale)"
                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border-none bg-[#492242] focus:border-none h-14 placeholder:text-[#cb90c1] p-4 text-base font-normal leading-normal"
               />
-               <span id="table_number_error" class="text-red-400 text-xs pt-1"></span>
+               <span id="table_number_error" class="text-red-400 text-xs pt-1 min-h-[16px]"></span>
             </label>
           </div>
+          {/* Submit Button */}
           <div class="flex px-4 py-3">
             <button
               id="submitButton"
@@ -95,51 +109,79 @@
           </div>
         </form>
       </div>
-      {/* Bottom Nav Placeholder - Not interactive on this page but good for layout consistency */}
+      {/* Placeholder for the fixed bottom navigation bar (not interactive on this page but maintains layout) */}
       <div class="flex gap-2 border-t border-[#492242] bg-[#34182f] px-4 pb-3 pt-2 fixed bottom-0 left-0 right-0 z-10">
-         {/* Placeholder for nav items, actual links on other pages */}
+         {/* Icons would go here on other pages */}
       </div>
-      <div class="h-5 bg-[#34182f]"></div> {/* Spacer for bottom fixed bar */}
+      {/* Spacer div to account for the height of the fixed bottom bar */}
+      <div class="h-5 bg-[#34182f]"></div> 
     </div>
 
     <script>
+      // This script handles the new reservation form submission, including client-side validation
+      // and sending the data to the backend API.
       document.addEventListener('DOMContentLoaded', () => {
+        // DOM element references
         const form = document.getElementById('newReservationForm');
         const submitButton = document.getElementById('submitButton');
-        const submitButtonText = submitButton.querySelector('span');
-        const formMessageArea = document.getElementById('form-message-area');
+        const submitButtonText = submitButton.querySelector('span'); // To change button text during loading
+        const formMessageArea = document.getElementById('form-message-area'); // For general form messages
 
-        // Input specific error elements
+        // References to specific error message elements for each input field
         const customerNameErrorEl = document.getElementById('customer_name_error');
         const reservationTimeErrorEl = document.getElementById('reservation_time_error');
         const numGuestsErrorEl = document.getElementById('num_guests_error');
         const tableNumberErrorEl = document.getElementById('table_number_error');
+        // const phoneNumberErrorEl = document.getElementById('phone_number_error'); // If specific phone errors are needed
 
-        function showMessage(element, message, isError = true) {
+        /**
+         * @description Displays a message in a specified HTML element, styled for error or success.
+         * @param {HTMLElement} element - The HTML element where the message will be shown.
+         * @param {string} message - The message text to display.
+         * @param {boolean} [isError=true] - If true, styles as an error message; otherwise, as a success/info message.
+         * @param {number} [duration=0] - How long to display the message in ms. 0 means persistent until cleared.
+         */
+        function showMessage(element, message, isError = true, duration = 0) {
             element.textContent = message;
-            element.className = isError ? 'text-red-400 text-xs pt-1 h-4' : 'text-green-400 text-xs pt-1 h-4'; // h-4 to maintain space
+            // Apply appropriate Tailwind CSS classes for styling
+            if (isError) {
+                element.className = 'text-red-400 text-xs pt-1 min-h-[16px]'; // Error styling (adjust min-h as needed)
+            } else {
+                element.className = 'text-green-400 text-xs pt-1 min-h-[16px]'; // Success/info styling
+            }
+            // If duration is set, clear the message after that time
+            if (duration > 0 && message) {
+                setTimeout(() => { element.textContent = ''; }, duration);
+            }
         }
         
+        /**
+         * @description Clears all validation messages from the form.
+         */
         function clearAllMessages() {
-            showMessage(formMessageArea, '', false);
+            showMessage(formMessageArea, '', false); // Clear general form message
             showMessage(customerNameErrorEl, '', false);
             showMessage(reservationTimeErrorEl, '', false);
             showMessage(numGuestsErrorEl, '', false);
             showMessage(tableNumberErrorEl, '', false);
+            // showMessage(phoneNumberErrorEl, '', false); // If phone error element exists
         }
 
+        // Event listener for the form submission
         form.addEventListener('submit', async (event) => {
-          event.preventDefault();
-          clearAllMessages();
+          event.preventDefault(); // Prevent default browser form submission
+          clearAllMessages(); // Clear any previous messages
 
+          // Get values from form fields
           const customerName = document.getElementById('customer_name').value.trim();
           const phoneNumber = document.getElementById('phone_number').value.trim();
           const reservationTime = document.getElementById('reservation_time').value.trim();
           const numGuests = document.getElementById('num_guests').value;
           const tableNumber = document.getElementById('table_number').value;
           
-          let isValid = true;
+          let isValid = true; // Flag to track overall form validity
 
+          // --- Input Validation ---
           if (!customerName) {
             showMessage(customerNameErrorEl, 'Nome cliente è obbligatorio.');
             isValid = false;
@@ -148,6 +190,7 @@
             showMessage(reservationTimeErrorEl, 'Orario è obbligatorio.');
             isValid = false;
           } else {
+            // Basic regex for 'YYYY-MM-DD HH:MM:SS' format
             const timeRegex = /^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/;
             if (!timeRegex.test(reservationTime)) {
               showMessage(reservationTimeErrorEl, 'Formato: YYYY-MM-DD HH:MM:SS');
@@ -166,56 +209,60 @@
             }
           }
           
+          // Validate table_number only if a value is entered
           if (tableNumber) {
             const tableNumberInt = parseInt(tableNumber, 10);
-            if (isNaN(tableNumberInt) || tableNumberInt <=0) {
+            if (isNaN(tableNumberInt) || tableNumberInt <=0) { // Table numbers are usually positive
                 showMessage(tableNumberErrorEl, 'Deve essere un numero positivo.');
                 isValid = false;
             }
           }
 
           if (!isValid) {
-            return;
+            return; // Stop submission if validation fails
           }
           
+          // Construct payload for the API request
           const payload = {
             customer_name: customerName,
-            phone_number: phoneNumber,
+            phone_number: phoneNumber, // Phone number is optional in form but might be required by API/DB
             reservation_time: reservationTime,
             num_guests: parseInt(numGuests, 10),
           };
-          if (tableNumber) {
+          if (tableNumber) { // Only include table_number if provided
             payload.table_number = parseInt(tableNumber, 10);
           }
 
+          // --- API Call ---
+          // Disable submit button and show loading state
           submitButton.disabled = true;
-          submitButtonText.textContent = 'Salvataggio...';
-          showMessage(formMessageArea, 'Invio prenotazione...', false);
+          submitButtonText.textContent = 'Salvataggio...'; // "Saving..."
+          showMessage(formMessageArea, 'Invio prenotazione...', false, 0); // "Submitting reservation..."
 
 
           try {
+            // Make the POST request to create a new reservation
             const response = await fetch('/api/reservations', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', },
               body: JSON.stringify(payload),
             });
 
-            if (response.status === 201) {
+            if (response.status === 201) { // Successfully created
               const result = await response.json();
-              showMessage(formMessageArea, \`Prenotazione creata con successo! ID: \${result.id}\`, false);
-              form.reset(); 
-              setTimeout(() => { 
-                clearAllMessages();
-                // window.location.href = 'Reservation'; // Optional redirect
-              }, 3000);
-            } else {
+              showMessage(formMessageArea, \`Prenotazione creata con successo! ID: \${result.id}\`, false, 3000);
+              form.reset(); // Clear the form fields
+              // Optionally, redirect after a short delay:
+              // setTimeout(() => { window.location.href = 'Reservation'; }, 3000); 
+            } else { // Handle API errors (e.g., 400, 500)
               const errorData = await response.json();
-              showMessage(formMessageArea, \`Errore: \${errorData.error || response.statusText}\`);
+              showMessage(formMessageArea, \`Errore: \${errorData.error || response.statusText}\`, true, 0);
             }
-          } catch (error) {
-            console.error('Errore:', error);
-            showMessage(formMessageArea, 'Si è verificato un errore di rete. Riprova più tardi.');
+          } catch (error) { // Handle network errors or other issues with fetch
+            console.error('Network/Submit Error:', error);
+            showMessage(formMessageArea, 'Si è verificato un errore di rete. Riprova più tardi.', true, 0);
           } finally {
+            // Re-enable submit button and restore original text
             submitButton.disabled = false;
             submitButtonText.textContent = 'Salva';
           }
