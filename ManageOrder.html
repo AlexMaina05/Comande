@@ -14,29 +14,29 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <style>
         body { font-family: Manrope, "Noto Sans", sans-serif; }
-        .menu-item-card { background-color: #492242; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
-        .current-order-item-card { background-color: #3a1a34; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
-        .action-button { background-color: #d30bb2; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
-        .action-button:hover { background-color: #b30992; }
-        .action-button:disabled { background-color: #7a5273; cursor: not-allowed; opacity: 0.7; }
-        .remove-button { background-color: #ef4444; } /* Tailwind red-500 */
-        .remove-button:hover { background-color: #dc2626; } /* Tailwind red-600 */
-        .quantity-controls button { background-color: #8b5cf6; /* Tailwind violet-500 */ padding: 4px 8px; border-radius: 4px; }
-        .quantity-controls input { width: 40px; text-align: center; background-color: #492242; border-radius:4px; margin: 0 4px; color: white; } /* Added color: white for input text */
-        .special-requests-input { background-color: #492242; color:white; padding: 6px; border-radius: 4px; width: calc(100% - 80px); margin-right:5px; } /* Adjusted width */
-        .save-request-btn { background-color: #10b981; /* Tailwind emerald-500 */ padding: 4px 8px; text-xs; border-radius:4px;}
+        .menu-item-card { background-color: #FFFFFF; border: 1px solid #DEE2E6; color: #212529; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+        .current-order-item-card { background-color: #FFFFFF; border: 1px solid #DEE2E6; color: #212529; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+        .action-button { background-color: #007BFF; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
+        .action-button:hover { background-color: #0056b3; }
+        .action-button:disabled { background-color: #C0C0C0; color: #6C757D; cursor: not-allowed; opacity: 0.7; }
+        .remove-button { background-color: #DC3545; } /* Tailwind red-500 */
+        .remove-button:hover { background-color: #C82333; } /* Tailwind red-600 */
+        .quantity-controls button { background-color: #007BFF; /* Tailwind violet-500 */ padding: 4px 8px; border-radius: 4px; }
+        .quantity-controls input { width: 40px; text-align: center; background-color: #FFFFFF; border: 1px solid #DEE2E6; border-radius:4px; margin: 0 4px; color: #212529; } /* Added color: white for input text */
+        .special-requests-input { background-color: #FFFFFF; border: 1px solid #DEE2E6; color:#212529; padding: 6px; border-radius: 4px; width: calc(100% - 80px); margin-right:5px; } /* Adjusted width */
+        .save-request-btn { background-color: #007BFF; /* Tailwind emerald-500 */ padding: 4px 8px; text-xs; border-radius:4px;}
     </style>
 </head>
-<body class="bg-[#231020] text-white">
+<body class="bg-[#F8F9FA] text-[#212529]">
 
     {/* Header section: Title and Back button */}
-    <header class="p-4 bg-[#34182f] sticky top-0 z-10">
+    <header class="p-4 bg-[#FFFFFF] sticky top-0 z-10 border-b border-[#DEE2E6]">
         <div class="flex justify-between items-center">
             <h2 id="manage-order-title" class="text-xl font-bold">Manage Order</h2>
             <a id="back-to-reservation-btn" href="#" class="action-button text-sm">Back to Reservation</a>
         </div>
         {/* Divs for displaying general errors or action feedback messages */}
-        <div id="error-message" class="text-red-400 mt-2 text-sm min-h-[20px]"></div>
+        <div id="error-message" class="text-[#DC3545] mt-2 text-sm min-h-[20px]"></div>
         <div id="action-feedback" class="mt-2 text-sm min-h-[20px]"></div> {/* Class for color set by showMessage */}
     </header>
 
@@ -46,8 +46,8 @@
         <div class="md:w-1/2">
             <h3 class="text-lg font-semibold mb-2">Menu Items</h3>
             {/* Container for menu items, scrollable */}
-            <div id="menu-items-container" class="space-y-2 max-h-[70vh] overflow-y-auto p-2 bg-[#2a1426] rounded-md">
-                <p class="text-gray-400">Loading menu items...</p> {/* Initial loading message */}
+            <div id="menu-items-container" class="space-y-2 max-h-[70vh] overflow-y-auto p-2 bg-[#E9ECEF] rounded-md">
+                <p class="text-[#6C757D]">Loading menu items...</p> {/* Initial loading message */}
             </div>
         </div>
 
@@ -55,11 +55,11 @@
         <div class="md:w-1/2">
             <h3 class="text-lg font-semibold mb-2">Current Order</h3>
             {/* Container for current order items, scrollable */}
-            <div id="current-order-items-container" class="space-y-2 max-h-[70vh] overflow-y-auto p-2 bg-[#2a1426] rounded-md">
-                <p class="text-gray-400">Loading order items...</p> {/* Initial loading message */}
+            <div id="current-order-items-container" class="space-y-2 max-h-[70vh] overflow-y-auto p-2 bg-[#E9ECEF] rounded-md">
+                <p class="text-[#6C757D]">Loading order items...</p> {/* Initial loading message */}
             </div>
             {/* Section to display the total price of the order */}
-            <div class="mt-4 p-3 bg-[#34182f] rounded-md">
+            <div class="mt-4 p-3 bg-[#FFFFFF] rounded-md border border-[#DEE2E6]">
                 <h4 class="text-lg font-semibold">Order Total: <span id="order-total">$0.00</span></h4>
             </div>
         </div>
@@ -93,7 +93,7 @@
         function showMessage(element, message, isError = true, duration = 3000) {
             element.textContent = message;
             // Apply appropriate Tailwind CSS classes based on message type
-            element.className = isError ? 'text-red-400 py-1 text-sm min-h-[20px]' : 'text-green-400 py-1 text-sm min-h-[20px]';
+            element.className = isError ? 'text-[#DC3545] py-1 text-sm min-h-[20px]' : 'text-[#28A745] py-1 text-sm min-h-[20px]';
             if (message && duration > 0) { // Only set timeout if duration is positive and message exists
                 setTimeout(() => { element.textContent = ''; }, duration);
             }
@@ -109,8 +109,8 @@
             showMessage(errorMessageDiv, 'Reservation ID or Order ID missing from URL.', true, 0); // Persistent error
             manageOrderTitle.textContent = 'Error';
             // Clear loading messages from containers
-            if(menuItemsContainer) menuItemsContainer.innerHTML = '<p class="text-red-400">Cannot load page.</p>'; 
-            if(currentOrderItemsContainer) currentOrderItemsContainer.innerHTML = '<p class="text-red-400">Cannot load page.</p>';
+            if(menuItemsContainer) menuItemsContainer.innerHTML = '<p class="text-[#DC3545]">Cannot load page.</p>'; 
+            if(currentOrderItemsContainer) currentOrderItemsContainer.innerHTML = '<p class="text-[#DC3545]">Cannot load page.</p>';
             return; // Stop further execution
         }
         // Set the href for the "Back to Reservation" button
@@ -154,13 +154,13 @@
 
                 // Fetch and render menu items only if not already loaded (e.g., on initial page load)
                 // This checks if the menu container still has its "Loading..." placeholder.
-                if (menuItemsContainer.querySelector('p.text-gray-400')) { 
+                if (menuItemsContainer.querySelector('p.text-[#6C757D]')) { 
                     await fetchAndRenderMenuItems(currentOrder.order_type);
                 }
             } catch (error) {
                 console.error('Failed to fetch order details:', error);
                 showMessage(errorMessageDiv, \`Failed to load order details: \${error.message}\`, true, 0);
-                if(currentOrderItemsContainer) currentOrderItemsContainer.innerHTML = '<p class="text-red-400">Could not load order items.</p>'; 
+                if(currentOrderItemsContainer) currentOrderItemsContainer.innerHTML = '<p class="text-[#DC3545]">Could not load order items.</p>'; 
             }
         }
 
@@ -169,7 +169,7 @@
          * @param {string} orderType - The type of order ('food' or 'beverage') to filter menu items for.
          */
         async function fetchAndRenderMenuItems(orderType) {
-            menuItemsContainer.innerHTML = '<p class="text-gray-400">Loading menu items...</p>';
+            menuItemsContainer.innerHTML = '<p class="text-[#6C757D]">Loading menu items...</p>';
             try {
                 // API call to get all menu items
                 const response = await fetch('/api/menu_items');
@@ -194,7 +194,7 @@
             } catch (error) {
                 console.error('Failed to fetch menu items:', error);
                 showMessage(errorMessageDiv, \`Failed to load menu: \${error.message}\`, true, 0);
-                if(menuItemsContainer) menuItemsContainer.innerHTML = '<p class="text-red-400">Could not load menu items.</p>';
+                if(menuItemsContainer) menuItemsContainer.innerHTML = '<p class="text-[#DC3545]">Could not load menu items.</p>';
             }
         }
 
@@ -205,7 +205,7 @@
         function renderMenuItems(menuItems) {
             menuItemsContainer.innerHTML = ''; // Clear previous content
             if (!menuItems || menuItems.length === 0) {
-                menuItemsContainer.innerHTML = '<p class="text-gray-400">No menu items available for this order type.</p>';
+                menuItemsContainer.innerHTML = '<p class="text-[#6C757D]">No menu items available for this order type.</p>';
                 return;
             }
             // Create and append an element for each menu item
@@ -215,7 +215,7 @@
                 card.innerHTML = \`
                     <div>
                         <p class="font-semibold">\${menuItem.name}</p>
-                        <p class="text-sm text-[#cb90c1]">$ \${menuItem.price.toFixed(2)}</p>
+                        <p class="text-sm text-[#212529]">$ \${menuItem.price.toFixed(2)}</p>
                     </div>
                     <button data-menu-item-id="\${menuItem.id}" class="add-to-order-btn action-button text-sm">Add</button>
                 \`;
@@ -232,7 +232,7 @@
         function renderCurrentOrderItems(orderItems) {
             currentOrderItemsContainer.innerHTML = ''; // Clear previous content
             if (!orderItems || orderItems.length === 0) {
-                currentOrderItemsContainer.innerHTML = '<p class="text-gray-400">No items in this order yet.</p>';
+                currentOrderItemsContainer.innerHTML = '<p class="text-[#6C757D]">No items in this order yet.</p>';
                 return;
             }
             // Create and append an element for each item in the current order
@@ -242,7 +242,7 @@
                 // Populate card with item details and controls
                 card.innerHTML = \`
                     <p class="font-semibold text-md">\${item.menu_item_name || 'Unknown Item'}</p>
-                    <p class="text-xs text-[#cb90c1] mb-1">Unit Price: $ \${(item.menu_item_price || 0).toFixed(2)}</p>
+                    <p class="text-xs text-[#6C757D] mb-1">Unit Price: <span class="text-[#212529]">$ \${(item.menu_item_price || 0).toFixed(2)}</span></p>
                     {/* Quantity controls: minus button, input field, plus button */}
                     <div class="flex items-center gap-2 mb-2 quantity-controls">
                         <label class="text-xs">Qty:</label>
