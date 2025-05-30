@@ -15,7 +15,7 @@
     <style>
         /* General button styling for consistency */
         .action-button { 
-            background-color: #d30bb2; /* Primary action color */
+            background-color: #007BFF; /* Primary action color */
             color: white; 
             padding: 8px 12px; 
             border-radius: 6px; 
@@ -25,63 +25,63 @@
             font-size: 0.875rem; /* text-sm */
             font-weight: bold; /* font-bold */
         }
-        .action-button:hover { background-color: #b30992; } /* Darker shade on hover */
-        .action-button:disabled { background-color: #7a5273; cursor: not-allowed; opacity: 0.7; }
+        .action-button:hover { background-color: #0056b3; } /* Darker shade on hover */
+        .action-button:disabled { background-color: #C0C0C0; color: #6C757D; cursor: not-allowed; opacity: 0.7; }
         
         /* Secondary button style, e.g., for "Manage Food/Beverage Order" */
-        .secondary-action-button { background-color: #492242; }
-        .secondary-action-button:hover { background-color: #6d3a61; }
+        .secondary-action-button { background-color: #6C757D; }
+        .secondary-action-button:hover { background-color: #5a6268; }
     </style>
   </head>
   <body>
     <div
-      class="relative flex size-full min-h-screen flex-col bg-[#231020] dark justify-between group/design-root overflow-x-hidden"
+      class="relative flex size-full min-h-screen flex-col bg-[#F8F9FA] dark justify-between group/design-root overflow-x-hidden"
       style='font-family: Manrope, "Noto Sans", sans-serif;'
     >
       {/* Main content area, with padding at the bottom to avoid overlap with fixed action buttons bar */}
       <div class="pb-24"> {/* Increased padding for taller fixed bar */}
         {/* Sticky header for page title and back navigation */}
-        <div class="flex items-center bg-[#231020] p-4 pb-2 justify-between sticky top-0 z-10">
-          <a href="Reservation" class="text-white flex size-12 shrink-0 items-center" data-icon="ArrowLeft" data-size="24px" data-weight="regular" aria-label="Back to Reservations">
+        <div class="flex items-center bg-[#F8F9FA] p-4 pb-2 justify-between sticky top-0 z-10 border-b border-[#DEE2E6]">
+          <a href="Reservation" class="text-[#212529] flex size-12 shrink-0 items-center" data-icon="ArrowLeft" data-size="24px" data-weight="regular" aria-label="Back to Reservations">
             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
               <path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
             </svg>
           </a>
-          <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Reservation Details</h2>
+          <h2 class="text-[#212529] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Reservation Details</h2>
         </div>
         
         {/* Section for displaying reservation details */}
         <div id="reservation-details-content">
-            <h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Reservation</h3>
-            <div class="bg-[#231020] px-4 py-2">
-                <p id="details-customer-name" class="text-white text-xl font-semibold leading-normal line-clamp-1">Caricamento...</p>
+            <h3 class="text-[#212529] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Reservation</h3>
+            <div class="bg-[#FFFFFF] px-4 py-2 border border-[#DEE2E6] rounded-lg my-2 mx-4">
+                <p id="details-customer-name" class="text-[#212529] text-xl font-semibold leading-normal line-clamp-1">Caricamento...</p>
             </div>
-            <div class="flex items-center gap-4 bg-[#231020] px-4 min-h-[72px] py-2">
+            <div class="flex items-center gap-4 bg-[#FFFFFF] px-4 min-h-[72px] py-2 border border-[#DEE2E6] rounded-lg my-2 mx-4">
               <div class="flex flex-col justify-center">
-                <p id="details-num-guests" class="text-white text-base font-medium leading-normal line-clamp-1">Ospiti: Caricamento...</p>
-                <p id="details-table-number" class="text-[#cb90c1] text-sm font-normal leading-normal line-clamp-2">Tavolo: Caricamento...</p>
+                <p id="details-num-guests" class="text-[#212529] text-base font-medium leading-normal line-clamp-1">Ospiti: Caricamento...</p>
+                <p id="details-table-number" class="text-[#6C757D] text-sm font-normal leading-normal line-clamp-2">Tavolo: Caricamento...</p>
               </div>
             </div>
-            <div class="flex items-center gap-4 bg-[#231020] px-4 min-h-[72px] py-2">
+            <div class="flex items-center gap-4 bg-[#FFFFFF] px-4 min-h-[72px] py-2 border border-[#DEE2E6] rounded-lg my-2 mx-4">
               <div class="flex flex-col justify-center">
-                <p id="details-date" class="text-white text-base font-medium leading-normal line-clamp-1">Data: Caricamento...</p>
-                <p id="details-time" class="text-[#cb90c1] text-sm font-normal leading-normal line-clamp-2">Ora: Caricamento...</p>
+                <p id="details-date" class="text-[#212529] text-base font-medium leading-normal line-clamp-1">Data: Caricamento...</p>
+                <p id="details-time" class="text-[#6C757D] text-sm font-normal leading-normal line-clamp-2">Ora: Caricamento...</p>
               </div>
             </div>
-             <div class="bg-[#231020] px-4 py-2">
-                <p id="details-reservation-status" class="text-white text-base font-medium leading-normal">Status: Caricamento...</p>
+             <div class="bg-[#FFFFFF] px-4 py-2 border border-[#DEE2E6] rounded-lg my-2 mx-4">
+                <p id="details-reservation-status" class="text-[#212529] text-base font-medium leading-normal">Status: Caricamento...</p>
             </div>
             {/* Element to display errors related to fetching reservation details */}
-            <div id="reservation-fetch-error" class="px-4 py-2 text-red-500 text-sm min-h-[20px]"></div>
+            <div id="reservation-fetch-error" class="px-4 py-2 text-[#DC3545] text-sm min-h-[20px]"></div>
         </div>
 
         {/* Section for displaying orders associated with the reservation */}
-        <h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Orders</h3>
-        <div id="orders-list-container" class="bg-[#231020] px-4 py-2">
-          <p class="text-white text-sm">Caricamento ordini...</p>
+        <h3 class="text-[#212529] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Orders</h3>
+        <div id="orders-list-container" class="bg-[#F8F9FA] px-4 py-2">
+          <p class="text-[#6C757D] text-sm">Caricamento ordini...</p>
         </div>
         {/* Element to display errors related to fetching orders */}
-        <div id="orders-fetch-error" class="px-4 py-2 text-red-500 text-sm min-h-[20px]"></div>
+        <div id="orders-fetch-error" class="px-4 py-2 text-[#DC3545] text-sm min-h-[20px]"></div>
         {/* Element for feedback on actions like creating an order */}
         <div id="action-feedback" class="px-4 py-2 text-sm min-h-[20px]"></div>
         {/* Element for messages related to printing orders */}
@@ -89,7 +89,7 @@
       </div>
 
       {/* Fixed bar at the bottom for order management actions */}
-      <div class="fixed bottom-0 left-0 right-0 z-10 bg-[#231020] border-t border-[#492242] pt-3 pb-3 px-4">
+      <div class="fixed bottom-0 left-0 right-0 z-10 bg-[#FFFFFF] border-t border-[#DEE2E6] pt-3 pb-3 px-4">
           <div class="flex flex-col gap-3 max-w-[480px] mx-auto">
             {/* Button to manage or create a food order */}
             <button id="manage-food-order-btn" class="action-button secondary-action-button w-full">Manage Food Order</button>
@@ -137,7 +137,7 @@
          */
         function showMessage(element, message, isError = true, duration = 3000) {
             element.textContent = message;
-            element.className = isError ? 'text-red-500 py-1 text-sm min-h-[20px]' : 'text-green-500 py-1 text-sm min-h-[20px]';
+            element.className = isError ? 'text-[#DC3545] py-1 text-sm min-h-[20px]' : 'text-[#28A745] py-1 text-sm min-h-[20px]';
             if (message && duration > 0) { // Only set timeout if duration is positive
                 setTimeout(() => { element.textContent = ''; }, duration);
             }
@@ -146,7 +146,7 @@
         // Validate if reservationId is present in the URL
         if (!reservationId) {
             const detailsContentEl = document.getElementById('reservation-details-content');
-            if(detailsContentEl) detailsContentEl.innerHTML = '<p class="text-red-500 text-center p-8">ID Prenotazione non trovato nella URL.</p>';
+            if(detailsContentEl) detailsContentEl.innerHTML = '<p class="text-[#DC3545] text-center p-8">ID Prenotazione non trovato nella URL.</p>';
             ordersListContainer.innerHTML = ''; 
             // Disable management buttons if no reservation ID
             if(manageFoodOrderBtn) manageFoodOrderBtn.disabled = true;
@@ -162,7 +162,7 @@
             showMessage(reservationFetchErrorEl, '', false); // Clear any old errors
             showMessage(ordersFetchErrorEl, '', false);
             showMessage(actionFeedbackEl, '', false); // Clear previous action feedback
-            ordersListContainer.innerHTML = '<p class="text-white text-sm">Caricamento ordini...</p>'; // Initial loading message for orders
+            ordersListContainer.innerHTML = '<p class="text-[#6C757D] text-sm">Caricamento ordini...</p>'; // Initial loading message for orders
             
             try {
                 // API call to fetch reservation details (expected to include associated orders)
@@ -191,7 +191,7 @@
                 } else {
                     // Fallback: if backend doesn't nest orders (should ideally not be needed)
                     console.warn("Reservation data did not contain 'orders' array. Attempting fallback: GET /api/orders and filter.");
-                    ordersListContainer.innerHTML = '<p class="text-white text-sm">Controllo ordini alternativo...</p>';
+                    ordersListContainer.innerHTML = '<p class="text-[#6C757D] text-sm">Controllo ordini alternativo...</p>';
                     const allOrdersResponse = await fetch('/api/orders'); // Fetch all orders
                     if (!allOrdersResponse.ok) throw new Error(\`Cannot fetch all orders: \${allOrdersResponse.status}\`);
                     const allOrders = await allOrdersResponse.json();
@@ -226,14 +226,14 @@
             showMessage(ordersFetchErrorEl,'',false); // Clear any previous order fetch errors
 
             if (!orders || orders.length === 0) {
-                ordersListContainer.innerHTML = '<p class="text-white text-sm">Nessun ordine per questa prenotazione.</p>';
+                ordersListContainer.innerHTML = '<p class="text-[#6C757D] text-sm">Nessun ordine per questa prenotazione.</p>';
                 return;
             }
 
             // Create and append an element for each order
             orders.forEach(order => {
                 const orderDiv = document.createElement('div');
-                orderDiv.className = 'mb-4 p-3 rounded-lg bg-[#492242]'; // Styling for each order card
+                orderDiv.className = 'mb-4 p-3 rounded-lg bg-[#FFFFFF] border border-[#DEE2E6]'; // Styling for each order card
                 
                 // Determine display title based on order_type
                 const orderTypeTitle = order.order_type === 'food' ? 'Ordine Cibo' : 
@@ -243,10 +243,10 @@
                 
                 // Populate the order card's HTML
                 orderDiv.innerHTML = \`
-                  <p class="text-white font-semibold">\${orderTypeTitle} (ID: \${order.id})</p>
-                  <p class="text-sm text-[#cb90c1]">Articoli: \${itemCount}</p>
-                  <p class="text-sm text-[#cb90c1]">Status: \${order.status}</p>
-                  <button data-order-id="\${order.id}" class="print-order-btn mt-2 px-3 py-1 bg-[#d30bb2] text-white text-xs font-bold rounded hover:bg-[#b30992] transition-colors">Stampa</button>
+                  <p class="text-[#212529] font-semibold">\${orderTypeTitle} (ID: \${order.id})</p>
+                  <p class="text-sm text-[#6C757D]">Articoli: \${itemCount}</p>
+                  <p class="text-sm text-[#6C757D]">Status: \${order.status}</p>
+                  <button data-order-id="\${order.id}" class="print-order-btn mt-2 px-3 py-1 bg-[#007BFF] text-white text-xs font-bold rounded hover:bg-[#0056b3] transition-colors">Stampa</button>
                   <span class="print-status text-xs ml-2 min-h-[16px] inline-block"></span>
                 \`;
                 ordersListContainer.appendChild(orderDiv);
